@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+  app-filament:
+    build: .
+    container_name: filament_v4_app
+    restart: always
+    env_file: .env
+    volumes:
+      - .:/var/www
+    networks:
+      - herama-frontend
+
+  web-server:
+    image: nginx:alpine
+    container_name: filament_nginx
+    restart: always
+    ports:
+      - "8585:80" # <--- Port 8585 (VPS) diteruskan ke Port 80 (Container)
+    volumes:
+      - .:/var/www
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app-filament
+    networks:
+      - herama-frontend
+
+networks:
+  herama-frontend:
+    driver: bridge
