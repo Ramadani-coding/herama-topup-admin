@@ -1,19 +1,17 @@
 version: "3.8"
 
 services:
-  # Service Laravel
   app-filament:
     build: .
     container_name: filament_v4_app
     restart: always
     env_file: .env
-    # HAPUS ATAU KOMENTARI BAGIAN VOLUMES INI
-    # volumes:
-    #   - .:/var/www
+    # MENGGUNAKAN NAMED VOLUME AGAR VENDOR TIDAK HILANG
+    volumes:
+      - herama-code:/var/www
     networks:
       - herama-frontend
 
-  # Service Nginx
   web-server:
     image: nginx:alpine
     container_name: filament_nginx
@@ -21,9 +19,8 @@ services:
     ports:
       - "8585:80"
     volumes:
-      # HAPUS VOLUMES KODE BERIKUT
-      # - .:/var/www
-      # BIARKAN CONFIG NGINX INI TETAP ADA
+      # NGINX MEMBACA KODE DARI VOLUME YANG SAMA
+      - herama-code:/var/www:ro
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - app-filament
@@ -33,3 +30,7 @@ services:
 networks:
   herama-frontend:
     driver: bridge
+
+# DEFINISIKAN VOLUME DI SINI
+volumes:
+  herama-code:
